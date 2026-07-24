@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Endpoint Protection Advisors — Find the right defense for every device</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blueprint: #16283F;
+    --blueprint-deep: #0E1C2E;
+    --paper: #ECE4D3;
+    --paper-dim: #C9BFA9;
+    --line: rgba(236,228,211,0.28);
+    --line-strong: rgba(236,228,211,0.55);
+    --brass: #C0834E;
+    --brass-bright: #D99A5F;
+    --ink: #ECE4D3;
+    --ink-dim: #9FB0BF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--blueprint);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{font-family:'Spectral',serif; font-weight:600; letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em;}
+  a{color:inherit;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  /* background blueprint grid */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    opacity:0.12;
+  }
+
+  /* NAV */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(14,28,46,0.88);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+  }
+  nav .wrap{display:flex; align-items:center; justify-content:space-between; height:72px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Spectral',serif; font-weight:600; font-size:1.05rem;}
+  .logo .dot{width:8px;height:8px;border-radius:50%;background:var(--brass); box-shadow:0 0 0 4px rgba(192,131,78,0.2);}
+  nav .links{display:flex; gap:32px; font-size:0.88rem;}
+  nav .links a{opacity:0.75; text-decoration:none; transition:opacity .2s;}
+  nav .links a:hover{opacity:1;}
+  .btn{
+    display:inline-block; padding:11px 22px; border-radius:2px;
+    background:var(--brass); color:var(--blueprint-deep); font-weight:600; font-size:0.88rem;
+    text-decoration:none; border:1px solid var(--brass); transition:all .2s; cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .btn:hover{background:var(--brass-bright); border-color:var(--brass-bright);}
+  .btn-ghost{
+    background:transparent; color:var(--paper); border:1px solid var(--line-strong);
+  }
+  .btn-ghost:hover{border-color:var(--brass); color:var(--brass-bright); background:transparent;}
+
+  /* HERO */
+  header.hero{position:relative; z-index:1; padding:96px 0 60px;}
+  .hero-inner{display:grid; grid-template-columns:1.05fr 1fr; gap:56px; align-items:center;}
+  @media (max-width:900px){ .hero-inner{grid-template-columns:1fr;} }
+  .eyebrow{
+    font-size:0.76rem; text-transform:uppercase; color:var(--brass-bright);
+    display:flex; align-items:center; gap:10px; margin-bottom:18px;
+  }
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--brass-bright);}
+  h1.headline{font-size:2.9rem; line-height:1.12; color:var(--paper); margin-bottom:20px;}
+  @media (max-width:640px){ h1.headline{font-size:2.1rem;} }
+  .headline em{font-style:normal; color:var(--brass-bright);}
+  .sub{font-size:1.05rem; color:var(--ink-dim); max-width:46ch; margin-bottom:32px;}
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .microcopy{margin-top:16px; font-size:0.8rem; color:var(--ink-dim);}
+
+  /* SCHEMATIC SVG */
+  .schematic-frame{
+    border:1px solid var(--line-strong); border-radius:2px; padding:20px;
+    background:rgba(236,228,211,0.02); position:relative;
+  }
+  .schematic-frame::before{
+    content:'FIG. 01 — MAPPED ENVIRONMENT'; position:absolute; top:-11px; left:16px;
+    background:var(--blueprint); padding:0 8px; font-size:0.68rem; color:var(--ink-dim);
+    font-family:'IBM Plex Mono',monospace; letter-spacing:0.05em;
+  }
+  svg#schematic{width:100%; height:auto; display:block;}
+  .sch-line{stroke:var(--line-strong); stroke-width:1.5; fill:none; stroke-dasharray:6 4;}
+  .sch-perim{stroke:var(--brass); stroke-width:1.5; fill:none; stroke-dasharray:5 5;
+    stroke-dashoffset:1000; stroke-dasharray:1000;
+    animation:draw 2.6s ease forwards;}
+  @keyframes draw{to{stroke-dashoffset:0;}}
+  .node{fill:var(--blueprint); stroke:var(--paper-dim); stroke-width:1.3;}
+  .node.risk{stroke:var(--brass); }
+  .node-label{font-family:'IBM Plex Mono',monospace; font-size:9px; fill:var(--ink-dim);}
+  .node-tag{font-family:'IBM Plex Mono',monospace; font-size:8px; fill:var(--brass-bright);}
+
+  /* SECTIONS */
+  section{position:relative; z-index:1; padding:88px 0;}
+  .section-head{max-width:640px; margin-bottom:48px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  h2{font-size:2rem; color:var(--paper); margin-bottom:14px;}
+  .section-head p{color:var(--ink-dim); font-size:1rem;}
+  hr.rule{border:none; border-top:1px solid var(--line); margin:0;}
+
+  /* WHY IT MATTERS - stat row */
+  .stat-row{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:56px;}
+  .stat{background:var(--blueprint); padding:28px 24px;}
+  .stat .num{font-family:'Spectral',serif; font-size:2.1rem; color:var(--brass-bright); font-weight:600;}
+  .stat .lbl{font-size:0.82rem; color:var(--ink-dim); margin-top:6px;}
+  @media (max-width:700px){ .stat-row{grid-template-columns:1fr;} }
+
+  .mistake-list{display:grid; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .mistake{background:var(--blueprint); padding:22px 26px; display:grid; grid-template-columns:28px 1fr; gap:16px;}
+  .mistake .mk{color:var(--brass); font-family:'IBM Plex Mono',monospace; font-size:0.85rem; padding-top:2px;}
+  .mistake h4{font-family:'Inter',sans-serif; font-weight:600; color:var(--paper); font-size:0.98rem; margin-bottom:4px;}
+  .mistake p{color:var(--ink-dim); font-size:0.9rem;}
+
+  /* HOW IT WORKS */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:28px;}
+  @media (max-width:800px){ .steps{grid-template-columns:1fr;} }
+  .step{border:1px solid var(--line); padding:28px 24px; position:relative;}
+  .step .idx{font-family:'IBM Plex Mono',monospace; color:var(--brass-bright); font-size:0.8rem; margin-bottom:14px;}
+  .step h3{font-size:1.15rem; color:var(--paper); margin-bottom:10px;}
+  .step p{color:var(--ink-dim); font-size:0.92rem;}
+  .step-connector{position:absolute; top:50%; right:-28px; width:28px; height:1px; background:var(--line);}
+  @media (max-width:800px){ .step-connector{display:none;} }
+
+  /* LEGEND / endpoint types */
+  .legend-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  @media (max-width:800px){ .legend-grid{grid-template-columns:repeat(2,1fr);} }
+  .legend-item{background:var(--blueprint); padding:22px; text-align:left;}
+  .legend-item .shape{width:14px; height:14px; border:1.4px solid var(--paper-dim); margin-bottom:14px;}
+  .legend-item.risk .shape{border-color:var(--brass);}
+  .legend-item h4{font-size:0.92rem; color:var(--paper); margin-bottom:6px;}
+  .legend-item p{font-size:0.8rem; color:var(--ink-dim);}
+
+  /* FORM */
+  .form-panel{
+    border:1px solid var(--line-strong); background:rgba(236,228,211,0.03);
+    padding:44px; display:grid; grid-template-columns:1fr 1fr; gap:40px;
+  }
+  @media (max-width:800px){ .form-panel{grid-template-columns:1fr; padding:28px;} }
+  .form-panel h2{font-size:1.7rem;}
+  .form-panel p.desc{color:var(--ink-dim); font-size:0.94rem; margin-bottom:0;}
+  form{display:flex; flex-direction:column; gap:16px;}
+  label{font-size:0.78rem; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-dim); margin-bottom:6px; display:block;}
+  input, select{
+    width:100%; background:var(--blueprint-deep); border:1px solid var(--line-strong);
+    color:var(--paper); padding:11px 12px; font-size:0.92rem; font-family:'Inter',sans-serif;
+    border-radius:1px;
+  }
+  input:focus, select:focus{outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass);}
+  form .btn{margin-top:8px; width:100%; text-align:center; border:1px solid var(--brass);}
+  .disclosure{font-size:0.72rem; color:var(--ink-dim); margin-top:14px; line-height:1.5;}
+
+  /* FAQ */
+  .faq-item{border-bottom:1px solid var(--line); padding:22px 0;}
+  .faq-item h4{font-size:1rem; color:var(--paper); margin-bottom:8px; font-family:'Inter',sans-serif; font-weight:600;}
+  .faq-item p{color:var(--ink-dim); font-size:0.92rem;}
+
+  footer{border-top:1px solid var(--line); padding:40px 0; position:relative; z-index:1;}
+  footer .wrap{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;}
+  footer p{font-size:0.78rem; color:var(--ink-dim);}
+  footer .flinks{display:flex; gap:20px; font-size:0.8rem;}
+  footer a{text-decoration:none; opacity:0.75;}
+  footer a:hover{opacity:1;}
+
+  @media (prefers-reduced-motion: reduce){
+    .sch-perim{animation:none; stroke-dashoffset:0;}
+  }
+
+  /* WIZARD */
+  .wizard-progress{height:2px; background:var(--line); margin-bottom:10px; position:relative;}
+  .wizard-progress-bar{height:2px; background:var(--brass); width:11%; transition:width .3s ease;}
+  .wizard-step-label{font-size:0.72rem; color:var(--ink-dim); margin-bottom:24px;}
+  .wizard-step{display:none;}
+  .wizard-step.active{display:block; animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+  .wizard-step > label{font-size:0.95rem; text-transform:none; letter-spacing:0; color:var(--paper); margin-bottom:14px; font-family:'Spectral',serif; font-weight:600; display:block;}
+  .choice-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media (max-width:480px){ .choice-grid{grid-template-columns:1fr;} }
+  .choice{
+    background:var(--blueprint-deep); border:1px solid var(--line-strong); color:var(--ink-dim);
+    padding:13px 14px; font-size:0.86rem; text-align:left; cursor:pointer; border-radius:1px;
+    font-family:'Inter',sans-serif; transition:all .15s;
+  }
+  .choice:hover{border-color:var(--brass-bright); color:var(--paper);}
+  .choice.selected{border-color:var(--brass); background:rgba(192,131,78,0.12); color:var(--paper);}
+  .wizard-nav{display:flex; justify-content:space-between; gap:12px; margin-top:28px;}
+  .wizard-nav .btn{flex:0 0 auto; width:auto; padding:11px 24px;}
+  .wizard-nav .btn:disabled{opacity:0.35; cursor:not-allowed;}
+  .wizard-nav .spacer{flex:1;}
+
+  .wizard-result{margin-top:8px;}
+  .wizard-result .result-head{margin-bottom:20px;}
+  .wizard-result .result-head p{color:var(--ink-dim); font-size:0.9rem;}
+  .match-card{border:1px solid var(--line-strong); padding:20px; margin-bottom:12px; position:relative;}
+  .match-card .match-rank{font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--brass-bright); margin-bottom:8px;}
+  .match-card h4{font-size:1.05rem; color:var(--paper); margin-bottom:6px; font-family:'Spectral',serif;}
+  .match-card .match-tier{font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--ink-dim); margin-bottom:12px;}
+  .match-card p{font-size:0.86rem; color:var(--ink-dim); margin-bottom:4px;}
+  .match-card .price{font-family:'IBM Plex Mono',monospace; color:var(--brass-bright); font-size:0.82rem; margin-top:10px;}
+  .no-match{border:1px dashed var(--line-strong); padding:24px; text-align:center; color:var(--ink-dim); font-size:0.9rem;}
+  .hubspot-embed-frame{background:var(--paper); border:1px solid var(--line-strong); border-radius:2px; padding:16px; min-height:80px;}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+
+<nav>
+  <div class="wrap">
+    <div class="logo"><span class="dot"></span>ENDPOINT PROTECTION ADVISORS</div>
+    <div class="links">
+      <a href="#map">The Map</a>
+      <a href="#mistakes">Why It Matters</a>
+      <a href="#how">How Matching Works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a href="#match" class="btn">Get Matched</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <div class="eyebrow mono">INDEPENDENT · VENDOR-AGNOSTIC</div>
+      <h1 class="headline">Every device is a door.<br>Know which ones are <em>unlocked.</em></h1>
+      <p class="sub">Free, independent guidance for growing businesses choosing endpoint protection — matched to your actual risk, not a vendor's quarterly quota.</p>
+      <div class="hero-ctas">
+        <a href="#match" class="btn">Start your free risk assessment</a>
+        <a href="#map" class="btn btn-ghost">See how devices get mapped</a>
+      </div>
+      <p class="microcopy mono">~4 MINUTES · NO SALES CALL UNTIL YOU ASK FOR ONE</p>
+    </div>
+    <div class="schematic-frame">
+      <svg id="schematic" viewBox="0 0 420 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- perimeter -->
+        <rect class="sch-perim" x="20" y="20" width="380" height="320" rx="4"/>
+        <!-- connective lines -->
+        <line class="sch-line" x1="210" y1="60" x2="210" y2="120"/>
+        <line class="sch-line" x1="210" y1="120" x2="90" y2="180"/>
+        <line class="sch-line" x1="210" y1="120" x2="330" y2="180"/>
+        <line class="sch-line" x1="90" y1="180" x2="90" y2="250"/>
+        <line class="sch-line" x1="330" y1="180" x2="330" y2="250"/>
+        <line class="sch-line" x1="210" y1="120" x2="210" y2="290"/>
+
+        <!-- router / gateway -->
+        <rect class="node" x="185" y="38" width="50" height="26" rx="2"/>
+        <text class="node-label" x="196" y="55">GATEWAY</text>
+
+        <!-- server -->
+        <rect class="node" x="185" y="98" width="50" height="26" rx="2"/>
+        <text class="node-label" x="197" y="115">SERVER</text>
+
+        <!-- laptop 1 (risk) -->
+        <rect class="node risk" x="65" y="160" width="50" height="26" rx="2"/>
+        <text class="node-label" x="70" y="177">LAPTOP-04</text>
+        <text class="node-tag" x="70" y="200">UNPATCHED</text>
+
+        <!-- laptop 2 -->
+        <rect class="node" x="305" y="160" width="50" height="26" rx="2"/>
+        <text class="node-label" x="310" y="177">LAPTOP-11</text>
+
+        <!-- mobile (risk) -->
+        <rect class="node risk" x="65" y="232" width="50" height="26" rx="2"/>
+        <text class="node-label" x="72" y="249">MOBILE-02</text>
+        <text class="node-tag" x="65" y="272">NO MDM</text>
+
+        <!-- desktop -->
+        <rect class="node" x="305" y="232" width="50" height="26" rx="2"/>
+        <text class="node-label" x="308" y="249">DESK-07</text>
+
+        <!-- IoT / POS -->
+        <rect class="node" x="185" y="270" width="50" height="26" rx="2"/>
+        <text class="node-label" x="196" y="287">POS-01</text>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<section id="map">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">THE LEGEND</div>
+      <h2>Five kinds of doors, one blueprint.</h2>
+      <p>"Endpoint protection" isn't one product — it's coverage across every device type that touches your network. Most breaches start at the one nobody mapped.</p>
+    </div>
+    <div class="legend-grid">
+      <div class="legend-item"><div class="shape"></div><h4>Servers</h4><p>Highest value, usually best protected. The blind spots are patch timing and lateral movement once one is compromised.</p></div>
+      <div class="legend-item risk"><div class="shape"></div><h4>Laptops &amp; workstations</h4><p>Leave the network daily. The single most common entry point for ransomware in businesses under 500 employees.</p></div>
+      <div class="legend-item risk"><div class="shape"></div><h4>Mobile &amp; remote</h4><p>Personal phones checking company email. Rarely covered by traditional antivirus, almost never by MDM.</p></div>
+      <div class="legend-item"><div class="shape"></div><h4>POS &amp; IoT</h4><p>Cameras, card readers, smart locks. Long-lived firmware that nobody owns updating.</p></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="mistakes">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">WHY IT MATTERS</div>
+      <h2>Most businesses get matched wrong — in both directions.</h2>
+      <p>Buy too little and one unmanaged laptop takes down the business. Buy too much and you're paying enterprise EDR prices for a five-person office, with a console nobody has time to watch.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><div class="num mono">82%</div><div class="lbl">of breaches at small businesses start on an endpoint, not the network perimeter</div></div>
+      <div class="stat"><div class="num mono">$0</div><div class="lbl">what most businesses spend mapping devices before buying protection</div></div>
+      <div class="stat"><div class="num mono">3</div><div class="lbl">vendor demos it typically takes before someone just picks the loudest sales rep</div></div>
+    </div>
+    <div class="mistake-list">
+      <div class="mistake"><div class="mk mono">01</div><div><h4>Over-buying enterprise tools</h4><p>Paying for correlation and threat-hunting features with no one to run them, on a five-person IT team wearing six hats.</p></div></div>
+      <div class="mistake"><div class="mk mono">02</div><div><h4>Under-protecting mobile and remote</h4><p>Traditional antivirus was built for desktops. Half the workforce isn't on one anymore.</p></div></div>
+      <div class="mistake"><div class="mk mono">03</div><div><h4>No one watching the alerts</h4><p>A tool that flags a threat at 2 a.m. is only useful if someone — or something — is watching. Most SMBs have neither.</p></div></div>
+      <div class="mistake"><div class="mk mono">04</div><div><h4>Choosing based on the demo, not the fit</h4><p>The best-run sales process usually wins the deal. It rarely means it's the right tool for your environment.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">HOW MATCHING WORKS</div>
+      <h2>Three steps. No pressure.</h2>
+      <p>This runs in order — each step narrows the field before you ever talk to a vendor.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-connector"></div>
+        <div class="idx mono">01</div>
+        <h3>Map your environment</h3>
+        <p>Eight questions about device count, mix, remote work, and current tools. No account required.</p>
+      </div>
+      <div class="step">
+        <div class="step-connector"></div>
+        <div class="idx mono">02</div>
+        <h3>We score against vetted providers</h3>
+        <p>Your risk profile is checked against EDR, MDR, and managed AV providers available through our technology partner network — already screened for fit and pricing honesty, not picked from a paid placement list.</p>
+      </div>
+      <div class="step">
+        <div class="idx mono">03</div>
+        <h3>You get 2–3 matches, plainly explained</h3>
+        <p>What each one covers, what it costs, and what it doesn't do. Talk to a provider only when you decide to.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="match">
+  <div class="wrap">
+    <div class="form-panel">
+      <div>
+        <div class="eyebrow mono">FREE ASSESSMENT</div>
+        <h2>Get matched to the right endpoint protection.</h2>
+        <p class="desc">A few minutes. No obligation. We'll send your matches to your inbox — you decide if and when to talk to anyone.</p>
+      </div>
+      <div class="wizard" id="wizard">
+        <div class="wizard-progress"><div class="wizard-progress-bar" id="wizardBar"></div></div>
+        <p class="wizard-step-label mono" id="wizardLabel">STEP 1 OF 9</p>
+
+        <div class="wizard-step active" data-step="1">
+          <label>Company size</label>
+          <div class="choice-grid" data-field="companySize">
+            <button type="button" class="choice" data-value="1-10">1–10 employees</button>
+            <button type="button" class="choice" data-value="11-50">11–50 employees</button>
+            <button type="button" class="choice" data-value="51-200">51–200 employees</button>
+            <button type="button" class="choice" data-value="200+">200+ employees</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="2">
+          <label>How many devices need protection?</label>
+          <div class="choice-grid" data-field="endpointCount">
+            <button type="button" class="choice" data-value="<25">Fewer than 25</button>
+            <button type="button" class="choice" data-value="25-100">25–100</button>
+            <button type="button" class="choice" data-value="101-500">101–500</button>
+            <button type="button" class="choice" data-value="500+">500+</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="3">
+          <label>What kinds of devices? <span style="font-weight:400; font-family:Inter,sans-serif; font-size:0.78rem; color:var(--ink-dim);">(select all that apply)</span></label>
+          <div class="choice-grid" data-field="deviceMix" data-multi="true">
+            <button type="button" class="choice" data-value="Workstations/laptops">Workstations / laptops</button>
+            <button type="button" class="choice" data-value="Servers">Servers</button>
+            <button type="button" class="choice" data-value="Mobile/BYOD">Mobile / BYOD</button>
+            <button type="button" class="choice" data-value="POS/IoT">POS / IoT devices</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="4">
+          <label>How much of the workforce is remote or hybrid?</label>
+          <div class="choice-grid" data-field="remoteWorkforce">
+            <button type="button" class="choice" data-value="None">None — fully on-site</button>
+            <button type="button" class="choice" data-value="Under 25%">Under 25%</button>
+            <button type="button" class="choice" data-value="25-75%">25–75%</button>
+            <button type="button" class="choice" data-value="Over 75%">Over 75%</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="5">
+          <label>What's currently in place?</label>
+          <div class="choice-grid" data-field="currentProtection">
+            <button type="button" class="choice" data-value="None">Nothing dedicated</button>
+            <button type="button" class="choice" data-value="Basic antivirus only">Basic antivirus only</button>
+            <button type="button" class="choice" data-value="Microsoft Defender (via M365)">Microsoft Defender (via M365)</button>
+            <button type="button" class="choice" data-value="Have EDR, unsure if right-sized">Have EDR, unsure if right-sized</button>
+            <button type="button" class="choice" data-value="Not sure what we have">Not sure what we have</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="6">
+          <label>Who manages security day-to-day?</label>
+          <div class="choice-grid" data-field="inHouseCapacity">
+            <button type="button" class="choice" data-value="None">No one — outsourced or nobody</button>
+            <button type="button" class="choice" data-value="One person, part-time">One person, part-time on this</button>
+            <button type="button" class="choice" data-value="Dedicated IT, no security specialist">Dedicated IT, no security specialist</button>
+            <button type="button" class="choice" data-value="Dedicated security staff">Dedicated security staff</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="7">
+          <label>Any compliance requirement to meet?</label>
+          <div class="choice-grid" data-field="complianceRequirement">
+            <button type="button" class="choice" data-value="None">None</button>
+            <button type="button" class="choice" data-value="HIPAA">HIPAA</button>
+            <button type="button" class="choice" data-value="PCI-DSS">PCI-DSS</button>
+            <button type="button" class="choice" data-value="CMMC/DFARS">CMMC / DFARS</button>
+            <button type="button" class="choice" data-value="Other/unsure">Other / unsure</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="8">
+          <label>What's the biggest concern right now?</label>
+          <div class="choice-grid" data-field="primaryConcern">
+            <button type="button" class="choice" data-value="Ransomware">Ransomware</button>
+            <button type="button" class="choice" data-value="Remote & BYOD exposure">Remote & BYOD exposure</button>
+            <button type="button" class="choice" data-value="Compliance audit">Compliance audit</button>
+            <button type="button" class="choice" data-value="Cost of current tools">Cost of current tools</button>
+          </div>
+        </div>
+
+        <div class="wizard-step" data-step="9">
+          <label>Where should we send your matches?</label>
+          <div style="margin-bottom:6px;">
+            <input type="email" id="wizardEmail" placeholder="you@company.com">
+          </div>
+        </div>
+
+        <div class="wizard-nav" id="wizardNav">
+          <button type="button" class="btn btn-ghost" id="wizardBack" style="visibility:hidden;">Back</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn" id="wizardNext" disabled>Next</button>
+        </div>
+
+        <div class="wizard-result" id="wizardResult" style="display:none;"></div>
+      </div>
+    </div>
+    <p class="disclosure">Endpoint Protection Advisors works with a technology solutions network that has existing agreements with the providers in your results, and may receive compensation through that network when you move forward with one. Compensation never affects which providers are shown or how they're ranked — matches are scored on fit to your environment first.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow mono">QUESTIONS</div>
+      <h2>Before you start</h2>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item"><h4>Is this free?</h4><p>Yes. The assessment and your matches cost nothing. We're paid by providers only if you choose to move forward with one — never by you.</p></div>
+      <div class="faq-item"><h4>Will I get spammed by sales calls?</h4><p>No. Your contact information isn't shared with a provider until you explicitly choose to connect with them.</p></div>
+      <div class="faq-item"><h4>Who's behind this?</h4><p>Built by a small team with a background in enterprise security sales and 20+ years watching businesses get mismatched to tools that don't fit — on both ends of the deal.</p></div>
+      <div class="faq-item"><h4>What if I already have a provider?</h4><p>The assessment will tell you if what you have is right-sized, over-built, or leaving gaps — even if you don't switch.</p></div>
+      <div class="faq-item"><h4>How are providers chosen and paid?</h4><p>We work through an established technology solutions network rather than one-off vendor deals, so pricing and terms are pre-negotiated, not marked up per referral. You'll always know which provider you're being connected to before anything is shared.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="mono">ENDPOINT PROTECTION ADVISORS — endpointprotection.net</p>
+    <div class="flinks">
+      <a href="#match">Get Matched</a>
+      <a href="mailto:info@endpointprotection.net">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ---------------------------------------------------------------
+   Matching engine — real Telarus supplier data (2026-07-23 export).
+   Segment/compliance/budget scoring only — no fabricated coverage data.
+--------------------------------------------------------------- */
+const VENDORS = [
+  { name:"Cato Networks", userMin:11, mrrMin:500, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"SASE/network security", complianceFrameworks:[] },
+  { name:"Thrive Networks", userMin:51, mrrMin:2000, segments:["SMB","Mid-Market"], specialty:"Managed IT/MSP", complianceFrameworks:[] },
+  { name:"eSentire", userMin:51, mrrMin:2000, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Pure-play MDR", complianceFrameworks:[] },
+  { name:"Quest Technology Management", userMin:11, mrrMin:500, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Managed IT/MSP", complianceFrameworks:[] },
+  { name:"Lumen", userMin:1, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Telecom/network, security bundled", complianceFrameworks:[] },
+  { name:"C3 Integrated Solutions LLC", userMin:2, mrrMin:2000, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Managed IT/MSP", complianceFrameworks:[] },
+  { name:"Crown Castle", userMin:1, mrrMin:500, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Telecom infrastructure", complianceFrameworks:[] },
+  { name:"Ariento Inc.", userMin:1, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"CMMC/DFARS/NIST 800-171 compliance specialist", complianceFrameworks:["CMMC","DFARS","NIST 800-171"] },
+  { name:"EnTelegent Solutions", userMin:1, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Managed IT/MSSP", complianceFrameworks:[] },
+  { name:"Intelligent Technical Solutions", userMin:11, mrrMin:2000, segments:["SMB","Mid-Market"], specialty:"Managed IT/MSP", complianceFrameworks:[] },
+  { name:"11:11 Systems Inc", userMin:11, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Cloud/disaster recovery, security bundled", complianceFrameworks:[] },
+  { name:"Comcast Business", userMin:1, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Telecom, security bundled", complianceFrameworks:[] },
+  { name:"TierPoint", userMin:11, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"Data center/colo, managed services", complianceFrameworks:[] },
+  { name:"Xcitium Cybersecurity", userMin:11, mrrMin:499, segments:["SMB","Mid-Market","Large Enterprise"], specialty:"EDR product vendor", complianceFrameworks:[] },
+  { name:"Dataprise", userMin:11, mrrMin:2000, segments:["SMB","Mid-Market"], specialty:"Managed IT/MSP", complianceFrameworks:[] },
+];
+
+const SIZE_LOWER_BOUND = { "1-10":1, "11-50":11, "51-200":51, "200+":200 };
+
+function getEligibleVendors(a, vendors){
+  const bound = SIZE_LOWER_BOUND[a.companySize] ?? 1;
+  return vendors.filter(v => bound >= v.userMin);
+}
+
+function segmentForCompanySize(companySize){
+  if (companySize === "1-10" || companySize === "11-50") return "SMB";
+  if (companySize === "51-200") return "Mid-Market";
+  return "Large Enterprise";
+}
+
+function scoreVendor(vendor, a, allEligible){
+  let score = 0;
+  const segment = segmentForCompanySize(a.companySize);
+  const segmentFit = vendor.segments.includes(segment) ? 40 : 15;
+  score += segmentFit;
+
+  let complianceFit = 15;
+  if (a.complianceRequirement && a.complianceRequirement !== "None"){
+    const named = vendor.complianceFrameworks.some(f => a.complianceRequirement.toLowerCase().includes(f.toLowerCase()));
+    complianceFit = named ? 30 : 5;
+  }
+  score += complianceFit;
+
+  const mrrs = allEligible.map(v => v.mrrMin);
+  const min = Math.min(...mrrs), max = Math.max(...mrrs);
+  let budgetFit;
+  if (max === min) budgetFit = 20;
+  else {
+    const normalized = 1 - (vendor.mrrMin - min) / (max - min);
+    budgetFit = Math.round((a.primaryConcern === "Cost of current tools" ? 30 : 18) * normalized);
+  }
+  score += budgetFit;
+
+  const factors = [
+    ["matches your company's customer segment", segmentFit, 40],
+    ["fits your compliance requirement", complianceFit, 30],
+    ["has a lower monthly minimum than other eligible options", budgetFit, 30],
+  ];
+  factors.sort((x,y) => (y[1]/y[2]) - (x[1]/x[2]));
+  const best = factors[0][0];
+  const worstFactor = factors[factors.length-1];
+  const worst = (worstFactor[1]/worstFactor[2] < 0.4) ? worstFactor[0] : null;
+
+  return { score: Math.round(score), best, worst };
+}
+
+function matchVendors(answers, vendors = VENDORS){
+  const eligible = getEligibleVendors(answers, vendors);
+  if (eligible.length === 0){
+    return { eligibleCount: 0, matches: [], noStrongMatch: true, reason: "no_eligible_suppliers" };
+  }
+  const scored = eligible.map(vendor => {
+    const { score, best, worst } = scoreVendor(vendor, answers, eligible);
+    return { vendor, score, best, worst };
+  });
+  scored.sort((a,b) => b.score - a.score);
+  const results = scored.filter(r => r.score >= 45).slice(0,3);
+  return { eligibleCount: eligible.length, matches: results, noStrongMatch: results.length === 0 };
+}
+
+/* ---------------------------------------------------------------
+   Wizard controller — submits to /api/submit-assessment (Resend),
+   with a mailto fallback if the server call fails.
+--------------------------------------------------------------- */
+(function(){
+  const TOTAL_STEPS = 9;
+  let current = 1;
+  const answers = {};
+
+  const steps = document.querySelectorAll('.wizard-step');
+  const bar = document.getElementById('wizardBar');
+  const label = document.getElementById('wizardLabel');
+  const backBtn = document.getElementById('wizardBack');
+  const nextBtn = document.getElementById('wizardNext');
+  const nav = document.getElementById('wizardNav');
+  const resultBox = document.getElementById('wizardResult');
+  const wizard = document.getElementById('wizard');
+  const emailInput = document.getElementById('wizardEmail');
+
+  document.querySelectorAll('.choice-grid').forEach(grid => {
+    const field = grid.dataset.field;
+    const multi = grid.dataset.multi === 'true';
+    grid.querySelectorAll('.choice').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (multi){
+          btn.classList.toggle('selected');
+          const selected = [...grid.querySelectorAll('.choice.selected')].map(b => b.dataset.value);
+          answers[field] = selected;
+          nextBtn.disabled = selected.length === 0;
+        } else {
+          grid.querySelectorAll('.choice').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          answers[field] = btn.dataset.value;
+          nextBtn.disabled = false;
+        }
+      });
+    });
+  });
+
+  emailInput.addEventListener('input', () => {
+    nextBtn.disabled = !emailInput.value.includes('@');
+  });
+
+  function showStep(n){
+    steps.forEach(s => s.classList.toggle('active', parseInt(s.dataset.step) === n));
+    bar.style.width = Math.round((n / TOTAL_STEPS) * 100) + '%';
+    label.textContent = `STEP ${n} OF ${TOTAL_STEPS}`;
+    backBtn.style.visibility = n === 1 ? 'hidden' : 'visible';
+    nextBtn.textContent = n === TOTAL_STEPS ? 'Get my matches' : 'Next';
+
+    if (n === TOTAL_STEPS){
+      nextBtn.disabled = !emailInput.value.includes('@');
+    } else {
+      const grid = document.querySelector(`.wizard-step[data-step="${n}"] .choice-grid`);
+      const hasSelection = grid && grid.querySelector('.choice.selected');
+      nextBtn.disabled = !hasSelection;
+    }
+  }
+
+  backBtn.addEventListener('click', () => {
+    if (current > 1){ current--; showStep(current); }
+  });
+
+  async function submitAssessment(answers, result){
+    try {
+      const res = await fetch('/api/submit-assessment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers, matches: result.matches }),
+      });
+      return res.ok;
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function buildMailtoLink(answers, result){
+    const lines = [
+      `New assessment submission — endpointprotection.net`,
+      ``,
+      `Company size: ${answers.companySize || '-'}`,
+      `Compliance requirement: ${answers.complianceRequirement || '-'}`,
+      `Primary concern: ${answers.primaryConcern || '-'}`,
+      `Visitor email: ${answers.email || '-'}`,
+      ``,
+      `Computed matches:`,
+      ...result.matches.map((m,i) => `${i+1}. ${m.vendor.name} (score ${m.score}/100) — ${m.vendor.specialty}`),
+    ];
+    const subject = encodeURIComponent(`Endpoint Protection Assessment — ${answers.companySize || 'New'} lead`);
+    const body = encodeURIComponent(lines.join('\n'));
+    return `mailto:sales@endpointprotection.net?subject=${subject}&body=${body}`;
+  }
+
+  nextBtn.addEventListener('click', async () => {
+    if (current < TOTAL_STEPS){
+      current++;
+      showStep(current);
+    } else {
+      answers.email = emailInput.value;
+      nextBtn.disabled = true;
+      nextBtn.textContent = 'Sending...';
+
+      const result = matchVendors(answers);
+      const sent = await submitAssessment(answers, result);
+
+      wizard.querySelectorAll('.wizard-step, .wizard-progress, .wizard-step-label, #wizardNav').forEach(el => el.style.display = 'none');
+      renderResult(result, sent);
+      resultBox.style.display = 'block';
+    }
+  });
+
+  function renderResult(result, sent){
+    const emailBtn = sent
+      ? ''
+      : `<a class="btn" href="${buildMailtoLink(answers, result)}" style="display:block; text-align:center; margin-top:10px;">Email us your details directly (backup)</a>`;
+    const failNote = sent
+      ? ''
+      : `<p style="color:var(--brass-bright); font-size:0.82rem; margin-top:8px;">We couldn't confirm delivery just now — please use the button below as a backup.</p>`;
+
+    if (result.eligibleCount === 0){
+      resultBox.innerHTML = `
+        <div class="result-head">
+          <h3 style="font-family:'Spectral',serif; color:var(--paper); margin-bottom:8px;">No eligible providers at this size yet</h3>
+          <p>Every provider in our current network has a minimum company size that your answers fall under. We'll follow up directly as our network grows to include options for smaller teams.</p>
+          ${failNote}
+        </div>
+        ${emailBtn}`;
+      return;
+    }
+    if (result.noStrongMatch){
+      resultBox.innerHTML = `
+        <div class="result-head">
+          <h3 style="font-family:'Spectral',serif; color:var(--paper); margin-bottom:8px;">We don't have a strong match yet</h3>
+          <p>${result.eligibleCount} provider(s) in our network could take on a business your size, but none scored well enough on fit to confidently recommend. We'll follow up directly once we've reviewed your answers.</p>
+          ${failNote}
+        </div>
+        ${emailBtn}`;
+      return;
+    }
+    const cards = result.matches.map((m, i) => `
+      <div class="match-card">
+        <div class="match-rank mono">MATCH ${i+1} OF ${result.matches.length} · SCORE ${m.score}/100</div>
+        <h4>${m.vendor.name}</h4>
+        <div class="match-tier mono">${m.vendor.specialty}</div>
+        <p>Matched because it ${m.best}.</p>
+        ${m.worst ? `<p>Worth knowing: it's a stretch on ${m.worst}.</p>` : ''}
+      </div>
+    `).join('');
+    resultBox.innerHTML = `
+      <div class="result-head">
+        <h3 style="font-family:'Spectral',serif; color:var(--paper); margin-bottom:8px;">Your matches</h3>
+        <p>${result.eligibleCount} provider(s) in our network can take on a business your size — here's how they rank against what you described.</p>
+        ${sent ? `<p style="color:var(--brass-bright); font-size:0.82rem;">Sent — we'll follow up shortly.</p>` : ''}
+      </div>
+      ${cards}
+      ${failNote}
+      ${emailBtn}
+      <p class="disclosure" style="margin-top:16px;">Final pricing and terms are confirmed with the provider directly; nothing here is a purchase or commitment.</p>
+    `;
+  }
+
+  showStep(current);
+})();
+</script>
+
+</body>
+</html>
