@@ -45,7 +45,7 @@ function isValidEmail(email) {
                                                 const { answers = {}, matches = [] } = req.body || {};
 
                                                 const matchLines = matches.length
-                                                ? matches.map((m, i) => `${i + 1}. ${m.name} (score ${m.score}/100) — ${m.specialty}`)
+                                                      ? matches.map((m, i) => `${i + 1}. ${m.vendor?.name} (score ${m.score}/100) — ${m.vendor?.specialty}`)
                                                 : ['No strong match returned.'];
 
                                                 // --- Internal notification (full detail, to sales@) ---
