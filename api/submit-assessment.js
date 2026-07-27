@@ -17,101 +17,112 @@
 
 function isValidEmail(email) {
   return typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function sendEmail(payload) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    const detail = await res.text();
+    return { ok: false, detail };
+  }
+  return { ok: true };
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  async function sendEmail(payload) {
-    const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-            headers: {
-                  Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-                        'Content-Type': 'application/json',
-                            },
-                                body: JSON.stringify(payload),
-                                  });
+  try {
+    const { answers = {}, matches = [], requestedContact = [] } = req.body || {};
 
-                                    if (!res.ok) {
-                                        const detail = await res.text();
-                                            return { ok: false, detail };
-                                              }
-                                                return { ok: true };
-                                                }
+    const matchLines = matches.length
+      ? matches.map((m, i) => `${i + 1}. ${m.name} (score ${m.score}/100) — ${m.specialty}`)
+      : ['No strong match returned.'];
 
-                                                export default async function handler(req, res) {
-                                                if (req.method !== 'POST') {
-                                                return res.status(405).json({ error: 'Method not allowed' });
-                                                }
+    const contactLine = requestedContact.length
+      ? `Requested contact from: ${requestedContact.join(', ')}`
+      : `Requested contact from: none selected`;
 
-                                                try {
-                                                const { answers = {}, matches = [] } = req.body || {};
+    // --- Internal notification (full detail, to sales@) ---
+    const internalText = [
+      `New assessment submission — endpointprotection.net`,
+      ``,
+      `Company size: ${answers.companySize || '-'}`,
+      `Device count: ${answers.endpointCount || '-'}`,
+      `Device mix: ${(answers.deviceMix || []).join(', ') || '-'}`,
+      `Remote workforce: ${answers.remoteWorkforce || '-'}`,
+      `Current protection: ${answers.currentProtection || '-'}`,
+      `Security ownership: ${answers.inHouseCapacity || '-'}`,
+      `Compliance requirement: ${answers.complianceRequirement || '-'}`,
+      `Primary concern: ${answers.primaryConcern || '-'}`,
+      `Visitor email: ${answers.email || '-'}`,
+      ``,
+      `Computed matches:`,
+      ...matchLines,
+      ``,
+      contactLine,
+    ].join('\n');
 
-                                                const matchLines = matches.length
-                                                      ? matches.map((m, i) => `${i + 1}. ${m.vendor?.name} (score ${m.score}/100) — ${m.vendor?.specialty}`)
-                                                : ['No strong match returned.'];
+    const internalResult = await sendEmail({
+      from: 'Endpoint Protection Advisors <assessments@endpointprotection.net>',
+      to: ['sales@endpointprotection.net'],
+      reply_to: answers.email || undefined,
+      subject: `Endpoint Protection Assessment — ${answers.companySize || 'New'} lead`,
+      text: internalText,
+    });
 
-                                                // --- Internal notification (full detail, to sales@) ---
-                                                const internalText = [
-                                                `New assessment submission — endpointprotection.net`,
-                                                ``,
-                                                `Company size: ${answers.companySize || '-'}`,
-                                                `Device count: ${answers.endpointCount || '-'}`,
-                                                `Device mix: ${(answers.deviceMix || []).join(', ') || '-'}`,
-                                                `Remote workforce: ${answers.remoteWorkforce || '-'}`,
-                                                `Current protection: ${answers.currentProtection || '-'}`,
-                                                `Security ownership: ${answers.inHouseCapacity || '-'}`,
-                                                `Compliance requirement: ${answers.complianceRequirement || '-'}`,
-                                                `Primary concern: ${answers.primaryConcern || '-'}`,
-                                                `Visitor email: ${answers.email || '-'}`,
-                                                ``,
-                                                `Computed matches:`,
-                                                ...matchLines,
-                                                ].join('\n');
+    if (!internalResult.ok) {
+      console.error('Resend API error (internal notification):', internalResult.detail);
+      return res.status(502).json({ error: 'Internal notification failed', detail: internalResult.detail });
+    }
 
-                                                const internalResult = await sendEmail({
-                                                from: 'Endpoint Protection Advisors <assessments@endpointprotection.net>',
-                                                to: ['sales@endpointprotection.net'],
-                                                reply_to: answers.email || undefined,
-                                                subject: `Endpoint Protection Assessment — ${answers.companySize || 'New'} lead`,
-                                                text: internalText,
-                                                });
+    // --- Visitor-facing copy (only if they gave a plausible email) ---
+    let visitorSent = false;
+    if (isValidEmail(answers.email)) {
+      const visitorText = [
+        `Thanks for completing the Endpoint Protection Advisors assessment.`,
+        ``,
+        `Based on what you told us, here's how your options ranked:`,
+        ``,
+        ...matchLines,
+        ``,
+        requestedContact.length
+          ? `You asked to be contacted by: ${requestedContact.join(', ')}. We'll pass your details along.`
+          : `You didn't request contact from anyone — this is just for your own reference.`,
+        ``,
+        `We'll follow up directly if there's anything worth discussing further.`,
+        `Final pricing and terms are always confirmed with the provider directly — this isn't a purchase or commitment.`,
+        ``,
+        `— Endpoint Protection Advisors`,
+      ].join('\n');
 
-                                                if (!internalResult.ok) {
-                                                console.error('Resend API error (internal notification):', internalResult.detail);
-                                                return res.status(502).json({ error: 'Internal notification failed', detail: internalResult.detail });
-                                                }
+      const visitorResult = await sendEmail({
+        from: 'Endpoint Protection Advisors <assessments@endpointprotection.net>',
+        to: [answers.email],
+        reply_to: 'sales@endpointprotection.net',
+        subject: `Your endpoint protection matches`,
+        text: visitorText,
+      });
 
-                                                let visitorSent = false;
-                                                if (isValidEmail(answers.email)) {
-                                                const visitorText = [
-                                                `Thanks for completing the Endpoint Protection Advisors assessment.`,
-                                                ``,
-                                                `Based on what you told us, here's how your options ranked:`,
-                                                ``,
-                                                ...matchLines,
-                                                ``,
-                                                `We'll follow up directly if there's anything worth discussing further.`,
-                                                `Final pricing and terms are always confirmed with the provider directly — this isn't a purchase or commitment.`,
-                                                ``,
-                                                `— Endpoint Protection Advisors`,
-                                                ].join('\n');
+      visitorSent = visitorResult.ok;
+      if (!visitorResult.ok) {
+        // Don't fail the whole request over this — the business-critical
+        // internal notification already succeeded. Just log it.
+        console.error('Resend API error (visitor copy):', visitorResult.detail);
+      }
+    }
 
-                                                const visitorResult = await sendEmail({
-                                                from: 'Endpoint Protection Advisors <assessments@endpointprotection.net>',
-                                                to: [answers.email],
-                                                reply_to: 'sales@endpointprotection.net',
-                                                subject: `Your endpoint protection matches`,
-                                                text: visitorText,
-                                                });
-
-                                                visitorSent = visitorResult.ok;
-                                                if (!visitorResult.ok) {
-                                                console.error('Resend API error (visitor copy):', visitorResult.detail);
-                                                }
-                                                }
-
-                                                return res.status(200).json({ success: true, visitorEmailSent: visitorSent });
-                                                } catch (err) {
-                                                console.error('submit-assessment error:', err);
-                                                return res.status(500).json({ error: err.message });
-                                                }
-                                                }
-                                                
+    return res.status(200).json({ success: true, visitorEmailSent: visitorSent });
+  } catch (err) {
+    console.error('submit-assessment error:', err);
+    return res.status(500).json({ error: err.message });
+  }
+}
